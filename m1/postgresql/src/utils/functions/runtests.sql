@@ -1,8 +1,7 @@
-CREATE OR REPLACE FUNCTION tests.run_tests(
-    IN filter character varying DEFAULT '^test_'::character varying,
-    IN schemafilter character varying DEFAULT '^tests$'::character varying)
-  RETURNS TABLE(test character varying, name character varying, result boolean) AS
-$BODY$
+CREATE OR REPLACE FUNCTION utils.runtests(filter character varying DEFAULT '^test_'::character varying, schemafilter character varying DEFAULT '^tests$'::character varying)
+ RETURNS TABLE(test character varying, name character varying, result boolean)
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
   r record;
   funcCall varchar;
@@ -23,7 +22,5 @@ BEGIN
     RETURN QUERY EXECUTE funcCall;
   END LOOP;
 END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100
-  ROWS 1000;
+$function$
+;
