@@ -9,8 +9,8 @@ CREATE TABLE features (
     step integer DEFAULT 1,
     state integer DEFAULT 1,
     strategy_id integer,
-    geom public.geometry(Geometry),
-    geom_symbol public.geometry(Geometry)
+    geom public.geometry,
+    geom_symbol public.geometry
 );
 
 CREATE SEQUENCE features_id_seq
