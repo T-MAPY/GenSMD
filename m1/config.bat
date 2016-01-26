@@ -4,4 +4,4 @@ set PGUSER=postgres
 set PGPASSWORD=postgres
 set PGDATABASE=gensmd
 set PGBIN=C:\Progra~1\PostgreSQL\9.5\bin
-set SRCDIR=D:\devel\git-repo\GenSMD\m1\postgresql\src
+set SRCDIR=%~dp0postgresql\src
