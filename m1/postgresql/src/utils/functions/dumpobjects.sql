@@ -14,6 +14,22 @@ BEGIN
       WITH objects AS
       (
         SELECT 
+            table_schema as schema, 
+            'tables'::varchar as type, 
+            table_name as name, 
+            utils.describetable(current_database(), table_schema, table_name, 'pre-data')  AS src
+          FROM information_schema.tables
+          WHERE table_schema = schemaName          
+        UNION
+        SELECT 
+            table_schema as schema, 
+            'tables_post'::varchar as type, 
+            table_name as name, 
+            utils.describetable(current_database(), table_schema, table_name, 'post-data')  AS src
+          FROM information_schema.tables
+          WHERE table_schema = schemaName          
+        UNION
+        SELECT 
             n.nspname as schema, 
             'functions'::varchar as type, 
             p.proname as name, 
