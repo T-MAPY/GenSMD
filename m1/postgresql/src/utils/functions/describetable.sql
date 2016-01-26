@@ -1,20 +1,21 @@
-CREATE OR REPLACE FUNCTION utils.describetable(database_name text, schema_name text, table_name text, section text DEFAULT ''::text)
+CREATE OR REPLACE FUNCTION utils.describetable(database_name text, schema_name text, table_name text, section text DEFAULT ''::text, pg_dump_path text DEFAULT ''::text)
  RETURNS text
  LANGUAGE plpython3u
  SECURITY DEFINER
 AS $function$
-  import os, subprocess, io
-  import re
+  import os, subprocess, io, platform
 
-  new_env = os.environ.copy()
-  new_env['PGPASSWORD'] = 'postgres'  
-
+  cmd = pg_dump_path + '/';
+  if platform.system() == 'Windows':
+    cmd += 'pg_dump.bat'
+  else:
+    cmd += 'pg_dump.sh'
+    
   par_section = ''
   if (section):
     par_section = ' --section=' + section;
 
-  proc = subprocess.Popen('c:/Progra~2/PostgreSQL/9.4/bin/pg_dump.exe -U postgres -O -s -t ' + schema_name + '.' + table_name + par_section + ' ' + database_name, 
-    env=new_env, 
+  proc = subprocess.Popen(cmd + ' -O -s -t ' + schema_name + '.' + table_name + par_section + ' ' + database_name, 
     stdout=subprocess.PIPE
   )
 

@@ -17,7 +17,7 @@ BEGIN
             table_schema as schema, 
             'tables'::varchar as type, 
             table_name as name, 
-            utils.describetable(current_database(), table_schema, table_name, 'pre-data')  AS src
+            utils.describetable(current_database(), table_schema, table_name, 'pre-data', targetdir)  AS src
           FROM information_schema.tables
           WHERE table_schema = schemaName          
         UNION
@@ -25,7 +25,7 @@ BEGIN
             table_schema as schema, 
             'tables_post'::varchar as type, 
             table_name as name, 
-            utils.describetable(current_database(), table_schema, table_name, 'post-data')  AS src
+            utils.describetable(current_database(), table_schema, table_name, 'post-data', targetdir)  AS src
           FROM information_schema.tables
           WHERE table_schema = schemaName          
         UNION
