@@ -1,1 +1,2 @@
-# postgresql - PostgreSQL
+# postgresql (PostgreSQL)
+Adresář databázových skriptů pro PostgreSQL
