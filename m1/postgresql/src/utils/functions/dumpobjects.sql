@@ -21,13 +21,35 @@ BEGIN
           FROM information_schema.tables
           WHERE table_schema = schemaName          
         UNION
-        SELECT 
+        SELECT * FROM (
+          SELECT 
             table_schema as schema, 
             'tables_post'::varchar as type, 
             table_name as name, 
-            utils.describetable(current_database(), table_schema, table_name, 'post-data', targetdir)  AS src
+            (SELECT array_to_string(array_agg(line), E'\n\n') FROM (
+              SELECT regexp_split_to_table(
+                utils.describetable(current_database(), table_schema, table_name, 'post-data', targetdir),
+                E'\n\n'
+              )  AS line
+            ) a WHERE line !~* E'(FOREIGN KEY)') as src
           FROM information_schema.tables
-          WHERE table_schema = schemaName          
+          WHERE table_schema = schemaName
+        ) b
+        UNION
+        SELECT * FROM (
+          SELECT 
+            table_schema as schema, 
+            'tables_fk'::varchar as type, 
+            table_name as name, 
+            (SELECT array_to_string(array_agg(line), E'\n\n') FROM (
+              SELECT regexp_split_to_table(
+                utils.describetable(current_database(), table_schema, table_name, 'post-data', targetdir),
+                E'\n\n'
+              )  AS line
+            ) a WHERE line ~* E'(SET|FOREIGN KEY)') as src
+          FROM information_schema.tables
+          WHERE table_schema = schemaName
+        ) a WHERE src ~* 'FOREIGN KEY'
         UNION
         SELECT 
             n.nspname as schema, 
