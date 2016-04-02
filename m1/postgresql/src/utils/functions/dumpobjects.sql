@@ -55,7 +55,13 @@ BEGIN
             n.nspname as schema, 
             'functions'::varchar as type, 
             p.proname as name, 
-            array_to_string(array_agg(pg_get_functiondef(p.oid) ORDER BY p.proname, p.proargtypes), E';\n\n') || ';' AS src
+            array_to_string(
+              array_cat(
+                array_agg(pg_get_functiondef(p.oid) ORDER BY p.proname, p.proargtypes),
+                array_agg('COMMENT ON FUNCTION ' || n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ') IS ''' || obj_description(p.oid) || '''' ORDER BY p.proname, p.proargtypes)
+              )
+              , E';\n\n'
+            ) || ';' AS src
           FROM pg_proc p
           LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
           WHERE n.nspname = schemaName
