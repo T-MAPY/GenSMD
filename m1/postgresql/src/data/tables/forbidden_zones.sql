@@ -4,9 +4,9 @@ CREATE TABLE forbidden_zones (
     frz_id integer NOT NULL,
     geom public.geometry NOT NULL
 );
-COMMENT ON TABLE forbidden_zones IS 'geometrie omezující operaci odsunu prvkù';
-COMMENT ON COLUMN forbidden_zones.frz_id IS 'identifikátor';
-COMMENT ON COLUMN forbidden_zones.geom IS 'geometrie zóny';
+COMMENT ON TABLE forbidden_zones IS 'geometries defining forbidden zones';
+COMMENT ON COLUMN forbidden_zones.frz_id IS 'zone id';
+COMMENT ON COLUMN forbidden_zones.geom IS 'zone geometry';
 
 CREATE SEQUENCE forbidden_zones_frz_id_seq
     START WITH 1
