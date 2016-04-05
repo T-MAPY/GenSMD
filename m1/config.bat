@@ -3,6 +3,6 @@ set PGHOST=localhost
 set PGUSER=postgres
 set PGPASSWORD=postgres
 set PGDATABASE=gensmd
-set PGBIN=C:\Progra~2\PostgreSQL\9.4\bin
+set PGBIN=C:\Progra~1\PostgreSQL\9.5\bin
 set OGRBIN=c:\OSGeo4W64\bin
 set SRCDIR=%~dp0postgresql\src
