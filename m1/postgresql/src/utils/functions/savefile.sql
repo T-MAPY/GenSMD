@@ -7,7 +7,7 @@ AS $function$
   if not os.path.exists(dirname):
     os.makedirs(dirname)
   text_file = open(filename, "w")
-  text_file.write(data)
+  text_file.write(data.replace('\r\n', '\n'))
   text_file.close()
   return True
 $function$
