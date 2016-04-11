@@ -9,7 +9,7 @@ CREATE TABLE elements (
     footprint public.geometry,
     geom public.geometry NOT NULL
 );
-COMMENT ON TABLE elements IS 'all generalized elements';
+COMMENT ON TABLE elements IS 'source input elements for a generalization';
 COMMENT ON COLUMN elements.elm_id IS 'element id';
 COMMENT ON COLUMN elements.elt_id IS 'element type';
 COMMENT ON COLUMN elements.source_id IS 'original source id';
