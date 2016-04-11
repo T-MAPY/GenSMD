@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION m1.gen_create_footprint(geom geometry, params jsonb, rotation double precision DEFAULT 0)
+CREATE OR REPLACE FUNCTION m1.gen_create_footprint(geom geometry, params jsonb)
  RETURNS geometry
  LANGUAGE plpgsql
 AS $function$
@@ -21,10 +21,10 @@ BEGIN
         -1 * COALESCE((params#>>'{origin,1}')::float, 0)
       );
     END IF;
-    IF (rotation != 0) THEN
+    IF (params ? 'rotation') THEN
       footprint := ST_Rotate(
         footprint,
-        pi() * rotation / 180,
+        pi() * (params#>>'{rotation}')::float / 180,
         centroid
       );
     END IF;
@@ -41,7 +41,7 @@ END;
 $function$
 ;
 
-COMMENT ON FUNCTION m1.gen_create_footprint(geom geometry, params jsonb, rotation double precision) IS 'Create geometry footprint using input JSON params
+COMMENT ON FUNCTION m1.gen_create_footprint(geom geometry, params jsonb) IS 'Create geometry footprint using input JSON params
 
 geom: geometry,             //required
 params: {                   //required
