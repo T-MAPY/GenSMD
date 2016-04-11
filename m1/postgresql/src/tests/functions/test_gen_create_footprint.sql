@@ -53,8 +53,7 @@ BEGIN
     COALESCE(ST_Equals(
       m1.gen_create_footprint(
         'POINT(0 0)'::geometry, 
-        '{"geometry": "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))", "origin": [0.5, 0.5]}'::jsonb,
-        45
+        '{"geometry": "POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))", "origin": [0.5, 0.5], "rotation": 45}'::jsonb
       ),
       ST_Rotate(ST_Translate('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::geometry, -0.5, -0.5), pi() * 45::float / 180, 0, 0)
     ), false) AS result
