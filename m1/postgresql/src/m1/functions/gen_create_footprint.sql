@@ -30,11 +30,56 @@ BEGIN
     END IF;
   END IF;
   IF (params ? 'buffer') THEN
-    footprint := ST_Buffer(
-      footprint, 
-      COALESCE((params#>>'{buffer,radius}')::float, 0), 
-      'endcap=' || COALESCE(params#>>'{buffer,endcap}', 'round')
-    );
+    IF (COALESCE(params#>>'{buffer,capstart}',params#>>'{buffer,capend}') IS NOT NULL) THEN
+      SELECT INTO footprint a.geom FROM (
+        WITH line AS (
+          SELECT geom, COALESCE((params#>>'{buffer,radius}')::float, 0) as radius
+        ),
+        flat AS (
+          SELECT ST_Buffer(line.geom, radius, 'endcap=flat') as geom FROM line
+        ),
+        startBuf AS (
+          SELECT a.geom FROM (
+            SELECT (ST_Dump(
+              ST_Difference(ST_Buffer(
+                line.geom, 
+                radius, 
+                'endcap=' || COALESCE(CASE params#>>'{buffer,capstart}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,capstart}' END, params#>>'{buffer,cap}', 'round')
+              ), flat.geom)
+            )).geom, ST_StartPoint(line.geom) as pt
+            FROM line, flat
+          ) a
+          WHERE ST_DWithin(a.geom, a.pt, 0.0001)
+        ),
+        endBuf AS (
+          SELECT a.geom FROM (
+            SELECT (ST_Dump(
+              ST_Difference(ST_Buffer(
+                line.geom, 
+                radius, 
+                'endcap=' || COALESCE(CASE params#>>'{buffer,capend}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,capend}' END, params#>>'{buffer,cap}', 'round')
+              ), flat.geom)
+            )).geom, ST_EndPoint(line.geom) as pt
+            FROM line, flat
+          ) a
+          WHERE ST_DWithin(a.geom, a.pt, 0.0001)
+        ),
+        allBuf AS (
+          SELECT flat.geom FROM flat
+          UNION
+          SELECT startBuf.geom FROM startBuf
+          UNION
+          SELECT endBuf.geom FROM endBuf
+        )
+        SELECT ST_Union(ST_Buffer(ST_SnapToGrid(allBuf.geom, 0.0001), 0)) as geom FROM allBuf
+      ) a;
+    ELSE
+      footprint := ST_SnapToGrid(ST_Buffer(
+        footprint, 
+        COALESCE((params#>>'{buffer,radius}')::float, 0), 
+        'endcap=' || COALESCE(CASE params#>>'{buffer,cap}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,cap}' END, 'round')
+      ), 0.0001);
+    END IF;
   END IF;
   RETURN footprint;
 END;
@@ -49,7 +94,9 @@ params: {                   //required
   "origin": [1.1, 1.5],     //optional, [float, float], default: [0, 0]
   "buffer": {               //optional,
     "radius": 2,            //optional, float, default: 0
-    "endcap": "flat"        //optional, [round|flat|square], defaul: round
+    "cap": "flat",          //optional, [round|flat|square|triangle], default: round
+    "capstart": "flat",     //optional, [round|flat|square|triangle], default: "cap"
+    "capend": "flat"        //optional, [round|flat|square|triangle], default: "cap"
   }
 },
 rotation: 45                //optional, float, default: 0 (for params with wkt geometry only)
