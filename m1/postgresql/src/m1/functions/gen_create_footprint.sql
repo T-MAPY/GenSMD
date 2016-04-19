@@ -30,10 +30,13 @@ BEGIN
     END IF;
   END IF;
   IF (params ? 'buffer') THEN
+    IF (params->'buffer' ? 'offset') THEN
+      footprint := ST_OffsetCurve(footprint, (params#>>'{buffer,offset}')::float);
+    END IF;
     IF (COALESCE(params#>>'{buffer,capstart}',params#>>'{buffer,capend}') IS NOT NULL) THEN
       SELECT INTO footprint a.geom FROM (
         WITH line AS (
-          SELECT geom, COALESCE((params#>>'{buffer,radius}')::float, 0) as radius
+          SELECT footprint as geom, COALESCE((params#>>'{buffer,radius}')::float, 0) as radius
         ),
         flat AS (
           SELECT ST_Buffer(line.geom, radius, 'endcap=flat') as geom FROM line

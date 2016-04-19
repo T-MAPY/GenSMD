@@ -38,6 +38,17 @@ BEGIN
   );
 
   RETURN QUERY (
+    SELECT 'm1.gen_create_footprint - buffer (offset)'::varchar AS name, 
+    COALESCE(ST_Equals(
+      m1.gen_create_footprint(
+        'LINESTRING(0 0, 10 0)'::geometry, 
+        '{"buffer": {"radius": 2, "cap": "flat", "offset": 1}}'::jsonb
+      ),
+      ST_Translate(ST_Buffer('LINESTRING(0 0, 10 0)'::geometry, 2, 'endcap=flat'), 0, 1)
+    ), false) AS result
+  );  
+
+  RETURN QUERY (
     SELECT 'm1.gen_create_footprint - buffer (square, flat)'::varchar AS name, 
     COALESCE(ST_Equals(
       m1.gen_create_footprint(
