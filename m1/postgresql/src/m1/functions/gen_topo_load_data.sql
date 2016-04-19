@@ -26,7 +26,9 @@ BEGIN
 
   RAISE NOTICE 'TOPO load data INTO elements_gen_src';
   
+  TRUNCATE data.element_footprints;
   TRUNCATE data.elements_proc;
+  
   INSERT INTO data.elements_proc (elm_id, geom)
     SELECT e.elm_id, e.geom
     FROM data.elements_in e 
