@@ -1,7 +1,7 @@
 SET search_path = data, public, pg_catalog;
 
 CREATE TABLE element_types (
-    elt_id integer NOT NULL,
+    elt_id character varying(20) NOT NULL,
     geom_type smallint NOT NULL,
     priority integer,
     footprint_params jsonb NOT NULL,
