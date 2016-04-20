@@ -32,7 +32,7 @@ BEGIN
         t.clearance_category as source_clearance_category,
         t.topology_participant as source_topology_participant,
         m1.gen_create_footprint(
-          ST_Line_Substring(
+          ST_LineSubstring(
             ep.geom,
             CASE WHEN info.is_start_single THEN 0 ELSE 2 * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) / info.len END,
             CASE WHEN info.is_end_single THEN 1 ELSE 1 - 2 * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) / info.len END
@@ -73,7 +73,7 @@ BEGIN
         clearance_category as source_clearance_category,
         topology_participant as source_topology_participant,
         m1.gen_create_footprint(
-          ST_Line_Substring(
+          ST_LineSubstring(
             a.geom,
             CASE WHEN is_start_single THEN 0 ELSE 2 * COALESCE((footprint_params#>>'{buffer,radius}')::float, 0) / len END,
             CASE WHEN is_end_single THEN 1 ELSE 1 - 2 * COALESCE((footprint_params#>>'{buffer,radius}')::float, 0) / len END
