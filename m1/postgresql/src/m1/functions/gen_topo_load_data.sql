@@ -28,6 +28,8 @@ BEGIN
   
   TRUNCATE data.element_footprints;
   TRUNCATE data.elements_proc;
+  ALTER SEQUENCE data.elements_proc_elm_proc_id_seq RESTART WITH 1;
+  ALTER SEQUENCE data.element_footprints_foo_id_seq RESTART WITH 1;
   
   INSERT INTO data.elements_proc (elm_id, geom)
     SELECT e.elm_id, e.geom

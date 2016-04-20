@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION m1.gen_element_proc_create_footprints(aelm_proc_id integer)
- RETURNS TABLE(source_type smallint, source_elt_id character varying, target_elt_id character varying, footprint geometry)
+ RETURNS TABLE(source_type smallint, source_elt_id character varying, target_elt_id character varying, source_clearance_category integer, source_topology_participant boolean, footprint geometry)
  LANGUAGE plpgsql
 AS $function$
 BEGIN
@@ -17,6 +17,8 @@ BEGIN
         1::smallint as source_type, 
         info.elt_id as source_elt_id, 
         '-'::varchar as target_elt_id,
+        t.clearance_category as source_clearance_category,
+        t.topology_participant as source_topology_participant,
         m1.gen_create_footprint(ep.geom, t.footprint_params) as footprint
       FROM ep
       INNER JOIN info ON TRUE
@@ -27,6 +29,8 @@ BEGIN
         2::smallint as source_type, 
         info.elt_id as source_elt_id, 
         '-'::varchar as target_elt_id,
+        t.clearance_category as source_clearance_category,
+        t.topology_participant as source_topology_participant,
         m1.gen_create_footprint(
           ST_Line_Substring(
             ep.geom,
@@ -51,6 +55,8 @@ BEGIN
         3::smallint as source_type, 
         info.elt_id as source_elt_id, 
         ov as target_elt_id,
+        t.clearance_category as source_clearance_category,
+        t.topology_participant as source_topology_participant,
         m1.gen_create_footprint(ep.geom,  m1.gen_json_get_override(t.footprint_params, 'buffer', ov)) as footprint
       FROM ep
       INNER JOIN info ON TRUE
@@ -59,11 +65,13 @@ BEGIN
       INNER JOIN data.element_types tt ON tt.elt_id = ov
       WHERE NOT info.topology_participant OR NOT tt.topology_participant
     )
-    , footprint3t AS (
+    , footprint4 AS (
       SELECT 
-        3::smallint as source_type, 
+        4::smallint as source_type, 
         elt_id as source_elt_id, 
         ov as target_elt_id,
+        clearance_category as source_clearance_category,
+        topology_participant as source_topology_participant,
         m1.gen_create_footprint(
           ST_Line_Substring(
             a.geom,
@@ -77,7 +85,11 @@ BEGIN
           )
         ) as footprint
       FROM (
-        SELECT info.*, ep.geom, m1.gen_json_get_override(t.footprint_params, 'buffer', ov) as footprint_params, ov
+        SELECT 
+          info.*, ep.geom, 
+          m1.gen_json_get_override(t.footprint_params, 'buffer', ov) as footprint_params, 
+          ov, 
+          t.clearance_category
         FROM ep
         INNER JOIN info ON TRUE
         INNER JOIN data.element_types t ON info.elt_id = t.elt_id
@@ -94,7 +106,7 @@ BEGIN
     UNION
     SELECT * FROM footprint3
     UNION
-    SELECT * FROM footprint3t;
+    SELECT * FROM footprint4;
 END;
 $function$
 ;

@@ -10,9 +10,9 @@ CREATE TABLE elements_in (
     topo_pt topology.topogeometry,
     topo_ln topology.topogeometry,
     topo_pl topology.topogeometry,
-    CONSTRAINT check_topogeom_topo_ln CHECK ((((topo_ln).topology_id = 180) AND ((topo_ln).layer_id = 2) AND ((topo_ln).type = 2))),
-    CONSTRAINT check_topogeom_topo_pl CHECK ((((topo_pl).topology_id = 180) AND ((topo_pl).layer_id = 3) AND ((topo_pl).type = 3))),
-    CONSTRAINT check_topogeom_topo_pt CHECK ((((topo_pt).topology_id = 180) AND ((topo_pt).layer_id = 1) AND ((topo_pt).type = 1)))
+    CONSTRAINT check_topogeom_topo_ln CHECK ((((topo_ln).topology_id = 194) AND ((topo_ln).layer_id = 2) AND ((topo_ln).type = 2))),
+    CONSTRAINT check_topogeom_topo_pl CHECK ((((topo_pl).topology_id = 194) AND ((topo_pl).layer_id = 3) AND ((topo_pl).type = 3))),
+    CONSTRAINT check_topogeom_topo_pt CHECK ((((topo_pt).topology_id = 194) AND ((topo_pt).layer_id = 1) AND ((topo_pt).type = 1)))
 );
 COMMENT ON TABLE elements_in IS 'source input elements for a generalization';
 COMMENT ON COLUMN elements_in.elm_id IS 'element id';

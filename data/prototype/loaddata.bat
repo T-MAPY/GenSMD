@@ -8,7 +8,7 @@ REM cesta
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2470000',2,1,'{\"buffer\":{\"radius\":1}}',1,true)"
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2480001',2,1,'{\"buffer\":{\"radius\":1}}',1,true)"
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2480006',2,1,'{\"buffer\":{\"radius\":1}}',1,true)"
-%OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2490101',2,1,'{\"buffer\":{\"radius\":0.75}}',1,true)"
+%OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2490101',2,1,'{\"buffer\":{\"radius\":0.75}, \"overrides\": {\"5210100\": {\"buffer\": {\"radius\": 0.7, \"offset\": 0}}}}',1,true)"
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('2490200',2,1,'{\"buffer\":{\"radius\":3, \"cap\": \"flat\"}}',1,true)"
                                                                                                                                                                                 
 REM vodni tok                                                                                                                                                                   
@@ -21,13 +21,14 @@ REM brehovka
 REM vodni plocha                                                                                                                                                                
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('3330000',3,1,'{\"buffer\":{\"radius\":0.75}}',1,true)"
 REM zelen                                                                                                                                                                       
-%OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('4120000',2,1,'{\"buffer\":{\"radius\":6}}',1,false)"
+%OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('4120000',2,1,'{\"buffer\":{\"radius\":6}, \"overrides\": {\"3060000\": {\"buffer\": {\"radius\": 0.7, \"offset\": -0.45}}}}',1,false)"
 REM hr. uzivani                                                                                                                                                                 
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('5210100',2,1,'{\"buffer\":{\"radius\":0.75}}',1,true)"
 REM terenni stupen                                                                                                                                                              
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "INSERT INTO data.element_types (elt_id, geom_type, priority, footprint_params, clearance_category, topology_participant) VALUES ('6060100',2,1,'{\"buffer\":{\"radius\":3.75, \"cap\": \"flat\", \"offset\": -3.5}, \"overrides\": {\"4120000\": {\"buffer\": {\"radius\": 0.7, \"offset\": -0.45}}}}', 1, false)" 
 
 %OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "TRUNCATE data.elements_in CASCADE"
+%OGRBIN%\ogrinfo -ro PG:%PGCONN% -sql "ALTER SEQUENCE data.elements_in_elm_id_seq RESTART WITH 1;"
 for /R %~dp0 %%i IN (*.shp) do (
   echo %%~ni
   
