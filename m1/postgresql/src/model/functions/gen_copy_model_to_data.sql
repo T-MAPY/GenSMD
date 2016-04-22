@@ -28,7 +28,8 @@ BEGIN
     COALESCE(merged ->> 'clearence', '0')::float,
     merged -> 'footprint_from',
     merged -> 'footprint_to'
-  FROM model.element_types_relations_load;
+  FROM model.element_types_relations_load
+  WHERE merged ->> 'conflict' = 'true';
 
   RETURN true;
   
