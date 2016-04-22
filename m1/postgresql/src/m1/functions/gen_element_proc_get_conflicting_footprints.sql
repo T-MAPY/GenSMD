@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION m1.gen_element_proc_get_conflicting_footprints(aelm_proc_id integer, clearance_distance double precision DEFAULT 0)
+CREATE OR REPLACE FUNCTION m1.gen_element_proc_get_conflicting_footprints(aelm_proc_id integer, max_clearence double precision DEFAULT 0)
  RETURNS TABLE(foo_id integer, conflicting_foo_id integer)
  LANGUAGE plpgsql
 AS $function$
@@ -9,31 +9,28 @@ BEGIN
     )
     , elements AS (
       SELECT 
-        epf.foo_id, epf.elm_proc_id, epf.source_type, epf.source_elt_id, epf.target_elt_id,
-        f.foo_id as conflicting_foo_id, f.elm_proc_id, f.source_type, f.source_elt_id, f.target_elt_id,
-        row_number() OVER (PARTITION BY f.elm_proc_id ORDER BY (epf.source_type + f.source_type) DESC) as rn
+        epf.foo_id, epf.elm_proc_id, epf.foo_type, epf.elt_id_from, epf.elt_id_to,
+        f.foo_id as conflicting_foo_id, f.elm_proc_id, f.foo_type, f.elt_id_from, f.elt_id_to,
+        row_number() OVER (PARTITION BY f.elm_proc_id ORDER BY (epf.foo_type + f.foo_type) DESC) as rn
       FROM ep
       INNER JOIN data.element_footprints epf ON epf.elm_proc_id = ep.elm_proc_id
-      INNER JOIN data.element_footprints f ON 
-        ST_DWithin(epf.footprint, f.footprint, clearance_distance) 
-        AND ST_DWithin(
-          epf.footprint, 
-          f.footprint, 
-          CASE epf.source_clearance_category WHEN f.source_clearance_category THEN clearance_distance ELSE 0 END
-        )
+      INNER JOIN data.element_footprints f ON ST_DWithin(epf.geom, f.geom, max_clearence) 
+      INNER JOIN data.element_types_relations r ON r.elt_id_from = epf.elt_id_from AND r.elt_id_to = f.elt_id_from AND r.conflict
       WHERE ep.elm_proc_id <> f.elm_proc_id
-        -- source_type (topo, nontopo) should be the same
-        AND MOD(epf.source_type, 2) = MOD(f.source_type, 2)
-        -- source_type = 3,4 only for current element
-        AND NOT (epf.source_type IN (3,4) AND epf.target_elt_id <> f.source_elt_id)
-        AND NOT (f.source_type IN (3,4) AND f.target_elt_id <> epf.source_elt_id)
-        AND NOT (epf.source_topology_participant AND f.source_topology_participant AND epf.source_type IN (1,3))
-        -- source_type = 1 ignore for footprint overrides
+        -- foo_type (topo, nontopo) should be the same
+        AND MOD(epf.foo_type, 2) = MOD(f.foo_type, 2)
+        -- foo_type = 3,4 only for current element
+        AND NOT (epf.foo_type IN (3,4) AND epf.elt_id_to <> f.elt_id_from)
+        AND NOT (f.foo_type IN (3,4) AND f.elt_id_to <> epf.elt_id_from)
+        AND NOT (epf.elm_proc_topology AND f.elm_proc_topology AND epf.foo_type IN (1,3))
+        -- foo_type = 1,2 ignore if exists footprint override for element_types relation
         AND NOT (
-          epf.source_type NOT IN (3,4) 
-          AND f.source_type NOT IN (3,4)
-          AND array[f.source_elt_id, epf.source_elt_id] && (SELECT array_agg(elt_id) FROM m1.gen_element_type_get_footprint_overrides(epf.source_elt_id, true))
+          epf.foo_type NOT IN (3,4) 
+          AND f.foo_type NOT IN (3,4)
+          AND COALESCE(r.footprint_from, r.footprint_to) IS NOT NULL
         )
+        -- distance by clearence
+        AND ST_DWithin(epf.geom, f.geom, COALESCE(r.clearence, 0)) 
     )
     SELECT e.foo_id, e.conflicting_foo_id FROM elements e WHERE e.rn = 1;
 END;

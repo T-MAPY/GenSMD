@@ -3,12 +3,11 @@ SET search_path = data, public, pg_catalog;
 CREATE TABLE element_footprints (
     foo_id integer NOT NULL,
     elm_proc_id integer NOT NULL,
-    source_type smallint NOT NULL,
-    source_elt_id character varying(20) NOT NULL,
-    target_elt_id character varying(20) DEFAULT '-'::character varying NOT NULL,
-    source_clearance_category integer,
-    source_topology_participant boolean NOT NULL,
-    footprint public.geometry(Polygon)
+    foo_type smallint NOT NULL,
+    elt_id_from character varying(20) NOT NULL,
+    elt_id_to character varying(20) DEFAULT '-'::character varying NOT NULL,
+    elm_proc_topology boolean NOT NULL,
+    geom public.geometry(Polygon)
 );
 
 CREATE SEQUENCE element_footprints_foo_id_seq

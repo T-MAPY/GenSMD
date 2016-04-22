@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION m1.gen_element_proc_get_info(aelm_proc_id integer)
- RETURNS TABLE(elm_id integer, elt_id character varying, len double precision, topology_participant boolean, is_start_single boolean, is_end_single boolean)
+ RETURNS TABLE(elm_id integer, elt_id character varying, len double precision, topology boolean, is_start_single boolean, is_end_single boolean)
  LANGUAGE plpgsql
 AS $function$
 BEGIN
@@ -12,7 +12,7 @@ BEGIN
         l.elm_id, 
         l.elt_id, 
         ep.len,
-        true as topology_participant,
+        true as topology,
         ed.abs_next_right_edge = ed.edge_id as is_start_single,
         ed.abs_next_left_edge = ed.edge_id as is_end_single
       FROM ep

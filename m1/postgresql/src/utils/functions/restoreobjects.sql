@@ -14,7 +14,7 @@ BEGIN
       EXECUTE 'DROP SCHEMA IF EXISTS ' || schemaName || ' CASCADE';
     END IF;
     EXECUTE 'CREATE SCHEMA IF NOT EXISTS ' || schemaName;
-    FOREACH objType IN ARRAY array['tables','tables_post','tables_fk','functions', 'views'] LOOP
+    FOREACH objType IN ARRAY array['functions', 'tables', 'tables_post', 'tables_fk', 'views'] LOOP
       fileList := utils.glob(concat(sourcedir,'/',schemaName,'/',objType,'/*.sql'));
       FOREACH fileName IN ARRAY fileList LOOP
         sql := utils.loadfile(fileName);

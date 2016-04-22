@@ -1,7 +1,4 @@
-TRUNCATE data.element_types CASCADE;
-
-SELECT model.gen_load_model(
-$$<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <gen:GenModel xmlns:gen="http://gensmd.local/genmodel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gensmd.local/genmodel genmodel.xsd">
 <SelectorList>
   <Selector>
@@ -220,12 +217,3 @@ $$<?xml version="1.0" encoding="UTF-8"?>
 </ElementTypeList>
 
 </gen:GenModel>
-$$
-);
-
-SELECT model.gen_copy_model_to_data();
-
-TRUNCATE data.elements_in CASCADE;
-ALTER SEQUENCE data.elements_in_elm_id_seq RESTART WITH 1;
-
-

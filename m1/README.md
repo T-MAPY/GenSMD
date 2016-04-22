@@ -4,7 +4,12 @@
 PostgreSQL 9.5.2 x64
 PostGIS 2.2.1
 Python 3.3 x64 (on system PATH)
-
+ * install pip 
+   1) download https://bootstrap.pypa.io/get-pip.py
+   2) python get-pip.py
+ * install xmltodict
+   pip install xmltodict
+ 
 Notice: 
 If unable to install PostGIS 2.2.1 bundle on a clean PostgreSQL 9.5.2 
 install ERROR: could not load library "../9.5/lib/rtpostgis-2.2.dll" follow

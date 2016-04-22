@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema id="genmodel" xmlns="http://gensmd.local/genmodel"
+	targetNamespace="http://gensmd.local/genmodel" xmlns:tns="http://gensmd.local/genmodel"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="GenModel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SelectorList">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Selector" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ElementType" type="ElementTypeDefinition" minOccurs="0" maxOccurs="1" />
+										<xs:element name="RelationList" minOccurs="0"	maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+			                    <xs:element name="RelationSelector" minOccurs="0" maxOccurs="unbounded">
+			                      <xs:complexType>
+			                        <xs:sequence>
+																<xs:element name="Relation" maxOccurs="1">
+										              <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Footprint" minOccurs="0" type="FootprintDefinition" />
+                                    </xs:sequence>
+			                              <xs:attribute name="clearence" type="xs:float" />
+			                              <xs:attribute name="conflict" type="BoolDefinition" />
+										              </xs:complexType>
+																</xs:element>
+														  </xs:sequence>
+			                        <xs:attribute name="cond"	use="optional">
+			                        	<xs:simpleType>
+			                        		<xs:restriction base="xs:string">
+			                        			<xs:minLength value="1" />
+			                        		</xs:restriction>
+			                        	</xs:simpleType>
+			                        </xs:attribute>
+			                        <xs:attribute name="join" use="optional">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:minLength value="1" />
+                                  </xs:restriction>
+                                </xs:simpleType>
+			                        </xs:attribute>
+														</xs:complexType>
+												  </xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="cond" use="optional">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="1" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ElementTypeList">
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="ElementType" type="ElementTypeDefinition" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="ElementTypeDefinition">
+		<xs:sequence>
+      <xs:element name="TagDict" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Tag" minOccurs="0" maxOccurs="unbounded">
+	            <xs:complexType>
+	              <xs:attribute name="key" type="xs:string" use="required" />
+	              <xs:attribute name="value" type="xs:string" use="required" />
+	            </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+			<xs:element name="TagList" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Footprint" minOccurs="0" type="FootprintDefinition" />
+		</xs:sequence>
+		<xs:attribute name="id" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="20"></xs:maxLength>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="geomType" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="point"></xs:enumeration>
+					<xs:enumeration value="line"></xs:enumeration>
+					<xs:enumeration value="polygon"></xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+    <xs:attribute name="priority" type="xs:int" use="optional" />
+    <xs:attribute name="topology"  type="BoolDefinition" use="optional" />
+	</xs:complexType>
+	
+  <xs:complexType name="FootprintDefinition">
+    <xs:sequence>
+      <xs:element name="Geometry" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Wkt" minOccurs="1" type="xs:string" />
+            <xs:element name="Origin">
+              <xs:complexType>
+                <xs:attribute name="x" type="xs:float" use="optional" />
+                <xs:attribute name="y" type="xs:float" use="optional" />
+              </xs:complexType>
+            </xs:element>  
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>  
+      <xs:element name="Buffer" minOccurs="0">
+        <xs:complexType>
+          <xs:attribute name="radius" type="xs:float" use="optional" />
+          <xs:attribute name="cap" use="optional" type="CapDefinition" />
+          <xs:attribute name="capStart" use="optional" type="CapDefinition" />
+          <xs:attribute name="capEnd" use="optional" type="CapDefinition" />
+          <xs:attribute name="offset" type="xs:float" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+	
+	
+	<xs:simpleType name="CapDefinition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="round"></xs:enumeration>
+			<xs:enumeration value="flat"></xs:enumeration>
+			<xs:enumeration value="square"></xs:enumeration>
+      <xs:enumeration value="triangle"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+  <xs:simpleType name="BoolDefinition">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true" />
+      <xs:enumeration value="false" />
+    </xs:restriction>
+  </xs:simpleType>
+	
+</xs:schema>

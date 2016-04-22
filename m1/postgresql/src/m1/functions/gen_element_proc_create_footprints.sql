@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION m1.gen_element_proc_create_footprints(aelm_proc_id integer)
- RETURNS TABLE(source_type smallint, source_elt_id character varying, target_elt_id character varying, source_clearance_category integer, source_topology_participant boolean, footprint geometry)
+ RETURNS TABLE(foo_type smallint, elt_id_from character varying, elt_id_to character varying, elm_proc_topology boolean, geom geometry)
  LANGUAGE plpgsql
 AS $function$
 BEGIN
@@ -9,96 +9,90 @@ BEGIN
       SELECT * FROM data.elements_proc WHERE elm_proc_id = aelm_proc_id
     )
     , info AS (
-      SELECT DISTINCT elt_id, len, topology_participant, is_start_single, is_end_single 
+      SELECT DISTINCT elt_id, len, topology, is_start_single, is_end_single 
       FROM m1.gen_element_proc_get_info((SELECT elm_proc_id FROM ep))
     )
+    -- default footprint
     , footprint1 AS (
       SELECT 
-        1::smallint as source_type, 
-        info.elt_id as source_elt_id, 
-        '-'::varchar as target_elt_id,
-        t.clearance_category as source_clearance_category,
-        t.topology_participant as source_topology_participant,
-        m1.gen_create_footprint(ep.geom, t.footprint_params) as footprint
+        1::smallint as foo_type, 
+        info.elt_id as elt_id_from, 
+        '-'::varchar as elt_id_to,
+        t.topology as elm_proc_topology,
+        m1.gen_create_footprint(ep.geom, t.footprint) as geom
       FROM ep
       INNER JOIN info ON TRUE
       INNER JOIN data.element_types t ON info.elt_id = t.elt_id
     )
+    -- default topo footprint
     , footprint2 AS (
       SELECT 
-        2::smallint as source_type, 
-        info.elt_id as source_elt_id, 
-        '-'::varchar as target_elt_id,
-        t.clearance_category as source_clearance_category,
-        t.topology_participant as source_topology_participant,
+        2::smallint as foo_type, 
+        info.elt_id as elt_id_from, 
+        '-'::varchar as elt_id_to,
+        t.topology as elm_proc_topology,
         m1.gen_create_footprint(
           ST_LineSubstring(
             ep.geom,
-            CASE WHEN info.is_start_single THEN 0 ELSE 2 * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) / info.len END,
-            CASE WHEN info.is_end_single THEN 1 ELSE 1 - 2 * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) / info.len END
+            CASE WHEN info.is_start_single THEN 0 ELSE 2 * COALESCE((t.footprint#>>'{buffer,radius}')::float, 0) / info.len END,
+            CASE WHEN info.is_end_single THEN 1 ELSE 1 - 2 * COALESCE((t.footprint#>>'{buffer,radius}')::float, 0) / info.len END
           ),
           jsonb_set(
-            footprint_params, '{buffer}', footprint_params->'buffer' 
+            t.footprint, '{buffer}', t.footprint->'buffer' 
             || CASE WHEN info.is_start_single THEN '{}'::jsonb ELSE '{"capstart": "triangle"}'::jsonb END
             || CASE WHEN info.is_end_single THEN '{}'::jsonb ELSE '{"capend": "triangle"}'::jsonb END
           )
-        ) as footprint
+        ) as geom
       FROM ep
       INNER JOIN info ON TRUE
       INNER JOIN data.element_types t ON info.elt_id = t.elt_id
       WHERE 
-        info.topology_participant
-        AND (CASE WHEN info.is_start_single THEN 0 ELSE 2 END + CASE WHEN info.is_end_single THEN 0 ELSE 2 END) * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) < info.len
+        info.topology
+        AND (CASE WHEN info.is_start_single THEN 0 ELSE 2 END + CASE WHEN info.is_end_single THEN 0 ELSE 2 END) * COALESCE((t.footprint#>>'{buffer,radius}')::float, 0) < info.len
     )
+    -- special relations footprints
     , footprint3 AS (
       SELECT 
-        3::smallint as source_type, 
-        info.elt_id as source_elt_id, 
-        ov as target_elt_id,
-        t.clearance_category as source_clearance_category,
-        t.topology_participant as source_topology_participant,
-        m1.gen_create_footprint(ep.geom,  m1.gen_json_get_override(t.footprint_params, 'buffer', ov)) as footprint
+        3::smallint as foo_type, 
+        info.elt_id as elt_id_from, 
+        r.elt_id_to,
+        t.topology as elm_proc_topology,
+        m1.gen_create_footprint(ep.geom, r.footprint_from) as geom
       FROM ep
       INNER JOIN info ON TRUE
       INNER JOIN data.element_types t ON info.elt_id = t.elt_id
-      INNER JOIN jsonb_object_keys(t.footprint_params->'overrides') ov ON TRUE
-      INNER JOIN data.element_types tt ON tt.elt_id = ov
-      WHERE NOT info.topology_participant OR NOT tt.topology_participant
+      INNER JOIN data.element_types_relations r ON info.elt_id = r.elt_id_from
+      INNER JOIN data.element_types tt ON tt.elt_id = r.elt_id_to
+      WHERE r.footprint_from IS NOT NULL AND (NOT info.topology OR NOT tt.topology)
     )
+    -- special relations topo footprints
     , footprint4 AS (
       SELECT 
-        4::smallint as source_type, 
-        elt_id as source_elt_id, 
-        ov as target_elt_id,
-        clearance_category as source_clearance_category,
-        topology_participant as source_topology_participant,
+        4::smallint as foo_type, 
+        info.elt_id as elt_id_from, 
+        r.elt_id_to,
+        t.topology as elm_proc_topology,
         m1.gen_create_footprint(
           ST_LineSubstring(
-            a.geom,
-            CASE WHEN is_start_single THEN 0 ELSE 2 * COALESCE((footprint_params#>>'{buffer,radius}')::float, 0) / len END,
-            CASE WHEN is_end_single THEN 1 ELSE 1 - 2 * COALESCE((footprint_params#>>'{buffer,radius}')::float, 0) / len END
+            ep.geom,
+            CASE WHEN info.is_start_single THEN 0 ELSE 2 * COALESCE((r.footprint_from#>>'{buffer,radius}')::float, 0) / info.len END,
+            CASE WHEN info.is_end_single THEN 1 ELSE 1 - 2 * COALESCE((r.footprint_from#>>'{buffer,radius}')::float, 0) / info.len END
           ),
           jsonb_set(
-            footprint_params, '{buffer}', footprint_params->'buffer' 
-            || CASE WHEN is_start_single THEN '{}'::jsonb ELSE '{"capstart": "triangle"}'::jsonb END
-            || CASE WHEN is_end_single THEN '{}'::jsonb ELSE '{"capend": "triangle"}'::jsonb END
+            r.footprint_from, '{buffer}', r.footprint_from->'buffer' 
+            || CASE WHEN info.is_start_single THEN '{}'::jsonb ELSE '{"capstart": "triangle"}'::jsonb END
+            || CASE WHEN info.is_end_single THEN '{}'::jsonb ELSE '{"capend": "triangle"}'::jsonb END
           )
-        ) as footprint
-      FROM (
-        SELECT 
-          info.*, ep.geom, 
-          m1.gen_json_get_override(t.footprint_params, 'buffer', ov) as footprint_params, 
-          ov, 
-          t.clearance_category
-        FROM ep
-        INNER JOIN info ON TRUE
-        INNER JOIN data.element_types t ON info.elt_id = t.elt_id
-        INNER JOIN jsonb_object_keys(t.footprint_params->'overrides') ov ON TRUE
-        INNER JOIN data.element_types tt ON tt.elt_id = ov
-        WHERE 
-          info.topology_participant AND tt.topology_participant
-          AND (CASE WHEN info.is_start_single THEN 0 ELSE 2 END + CASE WHEN info.is_end_single THEN 0 ELSE 2 END) * COALESCE((t.footprint_params#>>'{buffer,radius}')::float, 0) < info.len
-      ) a
+        ) as geom
+      FROM ep
+      INNER JOIN info ON TRUE
+      INNER JOIN data.element_types t ON info.elt_id = t.elt_id
+      INNER JOIN data.element_types_relations r ON info.elt_id = r.elt_id_from
+      INNER JOIN data.element_types tt ON tt.elt_id = r.elt_id_to
+      WHERE
+        r.footprint_from IS NOT NULL 
+        AND info.topology AND tt.topology
+        AND (CASE WHEN info.is_start_single THEN 0 ELSE 2 END + CASE WHEN info.is_end_single THEN 0 ELSE 2 END) * COALESCE((r.footprint_from#>>'{buffer,radius}')::float, 0) < info.len
     )
     SELECT * FROM footprint1
     UNION
