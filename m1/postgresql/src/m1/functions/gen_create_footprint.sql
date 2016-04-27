@@ -47,7 +47,7 @@ BEGIN
               ST_Difference(ST_Buffer(
                 line.geom, 
                 radius, 
-                'endcap=' || COALESCE(CASE params#>>'{buffer,capstart}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,capstart}' END, params#>>'{buffer,cap}', 'round')
+                m1.gen_get_buffer_style_parameters(params, 'start', 'buffer')
               ), flat.geom)
             )).geom, ST_StartPoint(line.geom) as pt
             FROM line, flat
@@ -60,7 +60,7 @@ BEGIN
               ST_Difference(ST_Buffer(
                 line.geom, 
                 radius, 
-                'endcap=' || COALESCE(CASE params#>>'{buffer,capend}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,capend}' END, params#>>'{buffer,cap}', 'round')
+                m1.gen_get_buffer_style_parameters(params, 'end', 'buffer')
               ), flat.geom)
             )).geom, ST_EndPoint(line.geom) as pt
             FROM line, flat
@@ -80,7 +80,7 @@ BEGIN
       footprint := ST_SnapToGrid(ST_Buffer(
         footprint, 
         COALESCE((params#>>'{buffer,radius}')::float, 0), 
-        'endcap=' || COALESCE(CASE params#>>'{buffer,cap}' WHEN 'triangle' THEN 'round quad_segs=1' ELSE params#>>'{buffer,cap}' END, 'round')
+        m1.gen_get_buffer_style_parameters(params, '', 'buffer')
       ), 0.0001);
     END IF;
   END IF;
