@@ -45,7 +45,7 @@ BEGIN
     COALESCE(
       (SELECT utils.xmldoctojsondoc(
           '<root><elmlist></elmlist></root>')) 
-        = '{"root": {"elmlist": {}}}'
+        = '{"root": {"elmlist": []}}'
       , false) AS result
   );
 
