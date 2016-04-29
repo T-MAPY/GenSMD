@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION tests.gen_create_footprint_side_lines()
+CREATE OR REPLACE FUNCTION tests.test_gen_create_footprint_side_lines()
  RETURNS TABLE(name character varying, result boolean)
  LANGUAGE plpgsql
 AS $function$
