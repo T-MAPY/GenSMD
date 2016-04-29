@@ -69,7 +69,7 @@ BEGIN
          'LINESTRING(0 0,10 0,10 10,0 10,0 2)'::geometry, 
          '{"buffer":{"radius":1,"cap":"square","join":"mitre"}}'::jsonb
         )
-      ) = '{"l:MULTILINESTRING((1 1,0.99 1,0 1),(1 1,9 1,9 9,1 9,1 2,1 1))","r:LINESTRING(-1 0,-1 -1,0 -1,11 -1,11 11,-1 11,-1 2,-1 1,0 1)"}',
+      ) = '{"l:LINESTRING(0.99 1,9 1,9 9,1 9,1 2,1 1,0 1)","r:LINESTRING(-1 0,-1 -1,0 -1,11 -1,11 11,-1 11,-1 2,-1 1,0 1)"}',
       false
     ) AS result
   );  
@@ -83,7 +83,7 @@ BEGIN
          'LINESTRING(0 0,10 0,10 10,0 10,0 0)'::geometry, 
          '{"buffer":{"radius":1,"cap":"square","join":"mitre"}}'::jsonb
         )
-      ) = '{"l:LINESTRING(1 1,9 1,9 9,1 9,1 1)","r:LINESTRING(-1 -1,0 -1,1 -1,11 -1,11 11,-1 11,-1 1,-1 0,-1 -1)"}',
+      ) = '{"l:LINESTRING(1 1,9 1,9 9,1 9,1 1)","r:LINESTRING(-1 0,-1 -1,0 -1,11 -1,11 11,-1 11,-1 0)"}',
       false
     ) AS result
   );  
@@ -97,7 +97,7 @@ BEGIN
          'LINESTRING(0 0,10 0,10 10,0 10,0 -5)'::geometry, 
          '{"buffer":{"radius":1,"cap":"square","join":"mitre"}}'::jsonb
         )
-      ) = '{"l:MULTILINESTRING((1 -1,1 -5,1 -6,0 -6),(1 1,9 1,9 9,1 9,1 1))","r:LINESTRING(0 -6,-1 -6,-1 -5,-1 11,11 11,11 -1,1 -1)"}',
+      ) = '{"l:MULTILINESTRING((1 -1,1 -5,1 -6,0 -6),(1 1,9 1,9 9,1 9,1 1))","r:LINESTRING(1 -1,11 -1,11 11,-1 11,-1 -5,-1 -6,0 -6)"}',
       false
     ) AS result
   );  
@@ -111,7 +111,7 @@ BEGIN
          'LINESTRING(-5 0,10 0,10 10,0 10,0 -5)'::geometry, 
          '{"buffer":{"radius":1,"cap":"square","join":"mitre"}}'::jsonb
         )
-      ) = '{"l:MULTILINESTRING((-6 0,-6 1,-5 1,-1 1),(1 -1,1 -5,1 -6,0 -6),(1 1,9 1,9 9,1 9,1 1))","r:MULTILINESTRING((-6 0,-6 -1,-5 -1,-1 -1,-1 -5,-1 -6,0 -6),(1 -1,11 -1,11 11,-1 11,-1 1))"}',
+      ) = '{"l:MULTILINESTRING((1 -1,1 -5,1 -6,0 -6),(-6 0,-6 1,-5 1,-1 1),(1 1,9 1,9 9,1 9,1 1))","r:MULTILINESTRING((-6 0,-6 -1,-5 -1,-1 -1,-1 -5,-1 -6,0 -6),(1 -1,11 -1,11 11,-1 11,-1 1))"}',
       false
     ) AS result
   );  

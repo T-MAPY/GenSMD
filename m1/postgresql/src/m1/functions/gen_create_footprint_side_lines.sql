@@ -17,7 +17,9 @@ BEGIN
       ) t
     )
     , offsets AS (
-      SELECT o.offset, o.direction, (SELECT ST_Union(ST_Collect(ST_StartPoint((dmp).geom), ST_EndPoint((dmp).geom))) FROM ST_Dump(o.offset) dmp) as endpoint
+      SELECT 
+        o.offset, 
+        o.direction 
       FROM (
         SELECT 
           ST_Difference(o.offset, d.internalmask) as offset, 
@@ -76,27 +78,29 @@ BEGIN
       UNION
       SELECT ST_LineSubstring(cap, 0.5, 1) as half, id, captype FROM caps
     )
-    , startend AS (
-      SELECT 
-        CASE h1.captype WHEN 'ext' THEN ST_Difference(h1.half, b.buff) ELSE h1.half END as start, 
-        CASE h2.captype WHEN 'ext' THEN ST_Difference(h2.half, b.buff) ELSE h2.half END as end, 
-        o.*
+    , offsetdmp AS (
+      SELECT direction, (ST_Dump(o.offset)).geom
       FROM offsets o
-      CROSS JOIN (SELECT ST_Union(ST_Buffer(buff, -0.00001)) as buff FROM buffs) b 
-      LEFT JOIN halfs h1 ON (ST_DWithin(o.endpoint, h1.half, 0.00001) AND h1.id = 'b')
-      LEFT JOIN halfs h2 ON (ST_DWithin(o.endpoint, h2.half, 0.00001) AND h2.id = 'e')
     )
-    , lines AS (
-      SELECT 1 as part, s.offset as line, s.direction FROM startend s
-      UNION
-      SELECT 2 as part, CASE WHEN ST_DWithin(s.offset, ST_StartPoint(s.start), 0.00001) THEN ST_Reverse(s.start) ELSE s.start END, s.direction FROM startend s WHERE s.start IS NOT NULL
-      UNION
-      SELECT 3 as part, s.end, s.direction FROM startend s WHERE s.end IS NOT NULL
+    , offsetstartend AS (
+      SELECT 
+        direction, 
+        o.geom, 
+        CASE WHEN ST_Dwithin(ST_StartPoint(o.geom), ST_StartPoint(h1.half), 0.00001) THEN ST_Reverse(h1.half) ELSE h1.half END as halfstart,
+        CASE WHEN ST_Dwithin(ST_EndPoint(o.geom), ST_EndPoint(h2.half), 0.00001) THEN ST_Reverse(h2.half) ELSE h2.half END as halfend
+      FROM offsetdmp o
+      LEFT JOIN halfs h1 ON (ST_DWithin(ST_StartPoint(o.geom), h1.half, 0.00001) AND h1.id = 'b')
+      LEFT JOIN halfs h2 ON (ST_DWithin(ST_EndPoint(o.geom), h2.half, 0.00001) AND h2.id = 'e')
     )
-    --SELECT t.half,id::bpchar FROM halfs t;
-    SELECT ST_LineMerge(ST_SnapToGrid(ST_Union(l.line), 0.0001)), direction
-    FROM lines l 
+    SELECT
+      ST_Union((COALESCE(
+        ST_LineMerge(ST_Collect(array[halfstart, o.geom, CASE WHEN ST_Equals(halfstart, halfend) THEN null ELSE halfend END])),
+        o.geom
+      ))),
+      direction
+    FROM offsetstartend o
     GROUP BY direction;
+
 
 END;
 $function$
