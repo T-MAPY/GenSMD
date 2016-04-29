@@ -22,10 +22,7 @@ $$<?xml version="1.0" encoding="UTF-8"?>
     <ElementType priority="4" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'voda'">
-    <ElementType priority="2" />
-  </Selector>
-  <Selector cond="taglist ? 'voda' AND geomtype = 'line'">
-    <ElementType topology="true" />
+    <ElementType priority="2" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'zelen'">
     <ElementType priority="6" />
