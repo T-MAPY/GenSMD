@@ -7,7 +7,10 @@ DECLARE
 BEGIN
   result := '';
   IF (functype = 'buffer') THEN
-    result := result || 'endcap=' || COALESCE(
+    IF (params#>'{buffer,quad_segs}' IS NOT NULL) THEN
+      result := result || ' quad_segs=' || (params#>>'{buffer,quad_segs}');
+    END IF;
+    result := result || ' endcap=' || COALESCE(
       CASE jsonb_extract_path_text(params, 'buffer', 'cap' || endtype) 
       WHEN 'triangle' 
       THEN 'round quad_segs=1' 
