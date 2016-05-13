@@ -94,7 +94,7 @@ BEGIN
     )
     SELECT
       ST_Union((COALESCE(
-        ST_LineMerge(ST_Collect(array[halfstart, o.geom, CASE WHEN ST_Equals(halfstart, halfend) THEN null ELSE halfend END])),
+        ST_LineMerge(ST_SnapToGrid(ST_Collect(array[halfstart, o.geom, CASE WHEN ST_Equals(halfstart, halfend) THEN null ELSE halfend END]), 0.00001)),
         o.geom
       ))),
       direction
