@@ -20,6 +20,7 @@ BEGIN
 
   FOR intersectionpart IN SELECT t.geom FROM (SELECT (ST_Dump(intersection)).geom) t WHERE ST_GeometryType(t.geom) = 'ST_LineString'
   LOOP
+    --RAISE NOTICE '%', ST_AsTExt(intersectionpart);
 
     locdata := '[]'::jsonb;
     locindex := 1;
@@ -38,7 +39,7 @@ BEGIN
       --ORDER BY (t.dmp).path[1]
     LOOP
       loc := ST_LineLocatePoint(refgeom, rpt.geom);
-      vect := ST_MakeLine(rpt.geom, ST_LineInterpolatePoint(refgeom, loc));
+      vect := ST_SnapToGrid(ST_MakeLine(rpt.geom, ST_LineInterpolatePoint(refgeom, loc)), 0.00001);
       locdata := locdata || jsonb_build_object(
         'id', rpt.id,
         'mref', loc,
@@ -97,8 +98,9 @@ BEGIN
             mend.id as mendid,
             mstart.mshift as mstartmshift,
             mend.mshift as mendmshift,
-            CASE WHEN mstart.len > mend.len THEN mstart.id ELSE mend.id END as longvectid,
-            CASE WHEN mstart.len > mend.len THEN mstart.mshift ELSE mend.mshift END as longvectshift
+            CASE WHEN mstart.len >= mend.len THEN mstart.id ELSE mend.id END as longvectid,
+            CASE WHEN mstart.len >= mend.len THEN mstart.mshift ELSE mend.mshift END as longvectshift,
+            CASE WHEN mstart.len >= mend.len THEN mstart.mref ELSE mend.mref END as longvectref
           FROM mstart, mend
           ORDER BY abs(mend.mshift - mstart.mshift)
           LIMIT 1
@@ -114,14 +116,19 @@ BEGIN
                ELSE rvect.mendid + CASE WHEN rvect.mendid > rvect.mstartid THEN -1 ELSE 1 END
                END;
           
+        RAISE NOTICE '%, %', rvect, rvect.longvectshift + (mshiftend - rvect.longvectshift) * abs(r.measure - rmeta.locref[locindex-1])/abs(rmeta.locref[locindex] - rmeta.locref[locindex-1]);
+
         -- create vector for vertex on refgeom, start point is calculated on proportional distance on shiftgeom between nearby vectors
-        RETURN QUERY SELECT t.vector FROM (
+        RETURN QUERY SELECT ST_SnapToGrid(t.vector, 0.00001) FROM (
           SELECT ST_MakeLine(
             ST_LineInterpolatePoint(
               intersectionpart, 
               rvect.longvectshift
                 + (mshiftend - rvect.longvectshift) 
-                * abs(r.measure - rmeta.locref[locindex-1])/abs(rmeta.locref[locindex] - rmeta.locref[locindex-1])
+                * (abs(
+                  CASE WHEN rmeta.locref[locindex] - rvect.longvectref < 0.00001 THEN 1 ELSE 0 END 
+                  - abs((r.measure - rmeta.locref[locindex-1])/(rmeta.locref[locindex] - rmeta.locref[locindex-1])))
+                  )
             ),
             r.geom
           ) as vector
