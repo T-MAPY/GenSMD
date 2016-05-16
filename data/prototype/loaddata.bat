@@ -14,10 +14,9 @@ for /R %~dp0 %%i IN (*.shp) do (
   -sql "SELECT znacka as elt_id, objectid AS source_id, znacka as source_elt_id FROM %%~ni" %%i
   
   %PGBIN%\psql -x -c "INSERT INTO data.elements_in (elt_id, source_id, source_elt_id, geom) SELECT elt_id::varchar, source_id, source_elt_id::varchar, ST_SetSrid(wkb_geometry, 0) FROM data.temp_elements"
-  %PGBIN%\psql -x -c "VACUUM FULL ANALYZE data.temp_elements"
   %PGBIN%\psql -x -c "DROP TABLE data.temp_elements"
 
 )
-
+%PGBIN%\psql -x -c "VACUUM FULL ANALYZE data.elements_in"
 %PGBIN%\psql -x -c "SELECT m1.gen_topo_update();"
 
