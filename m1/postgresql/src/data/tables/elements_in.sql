@@ -10,16 +10,16 @@ CREATE TABLE elements_in (
     topo_pt topology.topogeometry,
     topo_ln topology.topogeometry,
     topo_pl topology.topogeometry,
-    CONSTRAINT check_topogeom_topo_ln CHECK ((((topo_ln).topology_id = 194) AND ((topo_ln).layer_id = 2) AND ((topo_ln).type = 2))),
-    CONSTRAINT check_topogeom_topo_pl CHECK ((((topo_pl).topology_id = 194) AND ((topo_pl).layer_id = 3) AND ((topo_pl).type = 3))),
-    CONSTRAINT check_topogeom_topo_pt CHECK ((((topo_pt).topology_id = 194) AND ((topo_pt).layer_id = 1) AND ((topo_pt).type = 1)))
+    CONSTRAINT check_topogeom_topo_ln CHECK ((((topo_ln).topology_id = 223) AND ((topo_ln).layer_id = 2) AND ((topo_ln).type = 2))),
+    CONSTRAINT check_topogeom_topo_pl CHECK ((((topo_pl).topology_id = 223) AND ((topo_pl).layer_id = 3) AND ((topo_pl).type = 3))),
+    CONSTRAINT check_topogeom_topo_pt CHECK ((((topo_pt).topology_id = 223) AND ((topo_pt).layer_id = 1) AND ((topo_pt).type = 1)))
 );
 COMMENT ON TABLE elements_in IS 'source input elements for a generalization';
 COMMENT ON COLUMN elements_in.elm_id IS 'element id';
 COMMENT ON COLUMN elements_in.elt_id IS 'element type';
 COMMENT ON COLUMN elements_in.source_id IS 'original source id';
 COMMENT ON COLUMN elements_in.source_elt_id IS 'original source element type';
-COMMENT ON COLUMN elements_in.geom IS 'geometrie';
+COMMENT ON COLUMN elements_in.geom IS 'geometry';
 
 CREATE SEQUENCE elements_in_elm_id_seq
     START WITH 1
