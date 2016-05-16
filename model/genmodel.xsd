@@ -23,7 +23,7 @@
                                     <xs:sequence>
                                       <xs:element name="Footprint" minOccurs="0" type="FootprintDefinition" />
                                     </xs:sequence>
-			                              <xs:attribute name="clearence" type="xs:float" />
+			                              <xs:attribute name="clearance" type="xs:float" />
 			                              <xs:attribute name="conflict" type="BoolDefinition" />
 										              </xs:complexType>
 																</xs:element>

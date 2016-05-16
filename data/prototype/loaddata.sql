@@ -11,7 +11,7 @@ $$<?xml version="1.0" encoding="UTF-8"?>
         <Relation conflict="true" />
       </RelationSelector>
       <RelationSelector join="selector.tagdict->>'color' = relation.tagdict->>'color'">
-        <Relation clearence="1.2" />
+        <Relation clearance="1.2" />
       </RelationSelector>
     </RelationList>  
   </Selector>
@@ -44,7 +44,7 @@ $$<?xml version="1.0" encoding="UTF-8"?>
   <Selector cond="geomtype = 'polygon'">
     <RelationList>
       <RelationSelector>
-        <Relation conflict="false" clearence="0" />
+        <Relation conflict="false" clearance="0" />
       </RelationSelector>
     </RelationList>  
   </Selector>

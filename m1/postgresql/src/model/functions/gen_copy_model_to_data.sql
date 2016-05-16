@@ -20,12 +20,12 @@ BEGIN
     topology
   FROM model.vw_element_types_load;
 
-  INSERT INTO data.element_types_relations (elt_id_from, elt_id_to, conflict, clearence, footprint_from, footprint_to)
+  INSERT INTO data.element_types_relations (elt_id_from, elt_id_to, conflict, clearance, footprint_from, footprint_to)
   SELECT 
     id_from, 
     id_to, 
     CASE merged ->> 'conflict' WHEN 'true' THEN true ELSE false END,
-    COALESCE(merged ->> 'clearence', '0')::float,
+    COALESCE(merged ->> 'clearance', '0')::float,
     merged -> 'footprint_from',
     merged -> 'footprint_to'
   FROM model.element_types_relations_load
