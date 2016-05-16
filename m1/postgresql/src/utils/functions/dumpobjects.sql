@@ -19,7 +19,7 @@ BEGIN
             table_name as name, 
             utils.describetable(current_database(), table_schema, table_name, 'pre-data', targetdir)  AS src
           FROM information_schema.tables
-          WHERE table_schema = schemaName          
+          WHERE table_schema = schemaName AND table_type NOT IN ('VIEW')
         UNION
         SELECT * FROM (
           SELECT 
