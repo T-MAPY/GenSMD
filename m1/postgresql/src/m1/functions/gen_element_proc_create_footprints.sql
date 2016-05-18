@@ -6,7 +6,7 @@ BEGIN
   RETURN QUERY
 
     WITH ep AS (
-      SELECT * FROM data.elements_proc WHERE elm_proc_id = aelm_proc_id
+      SELECT * FROM m1_data.elements_proc WHERE elm_proc_id = aelm_proc_id
     )
     , info AS (
       SELECT DISTINCT elt_id, len, topology, is_start_single, is_end_single 
@@ -22,7 +22,7 @@ BEGIN
         m1.gen_create_footprint(ep.geom, t.footprint) as geom
       FROM ep
       INNER JOIN info ON TRUE
-      INNER JOIN data.element_types t ON info.elt_id = t.elt_id
+      INNER JOIN m1_data.element_types t ON info.elt_id = t.elt_id
     )
     -- default topo footprint
     , footprint2 AS (
@@ -45,7 +45,7 @@ BEGIN
         ) as geom
       FROM ep
       INNER JOIN info ON TRUE
-      INNER JOIN data.element_types t ON info.elt_id = t.elt_id
+      INNER JOIN m1_data.element_types t ON info.elt_id = t.elt_id
       WHERE 
         info.topology
         AND (CASE WHEN info.is_start_single THEN 0 ELSE 2 END + CASE WHEN info.is_end_single THEN 0 ELSE 2 END) * COALESCE((t.footprint#>>'{buffer,radius}')::float, 0) < info.len
@@ -60,9 +60,9 @@ BEGIN
         m1.gen_create_footprint(ep.geom, r.footprint_from) as geom
       FROM ep
       INNER JOIN info ON TRUE
-      INNER JOIN data.element_types t ON info.elt_id = t.elt_id
-      INNER JOIN data.element_types_relations r ON info.elt_id = r.elt_id_from
-      INNER JOIN data.element_types tt ON tt.elt_id = r.elt_id_to
+      INNER JOIN m1_data.element_types t ON info.elt_id = t.elt_id
+      INNER JOIN m1_data.element_types_relations r ON info.elt_id = r.elt_id_from
+      INNER JOIN m1_data.element_types tt ON tt.elt_id = r.elt_id_to
       WHERE r.footprint_from IS NOT NULL AND (NOT info.topology OR NOT tt.topology)
     )
     -- special relations topo footprints
@@ -86,9 +86,9 @@ BEGIN
         ) as geom
       FROM ep
       INNER JOIN info ON TRUE
-      INNER JOIN data.element_types t ON info.elt_id = t.elt_id
-      INNER JOIN data.element_types_relations r ON info.elt_id = r.elt_id_from
-      INNER JOIN data.element_types tt ON tt.elt_id = r.elt_id_to
+      INNER JOIN m1_data.element_types t ON info.elt_id = t.elt_id
+      INNER JOIN m1_data.element_types_relations r ON info.elt_id = r.elt_id_from
+      INNER JOIN m1_data.element_types tt ON tt.elt_id = r.elt_id_to
       WHERE
         r.footprint_from IS NOT NULL 
         AND info.topology AND tt.topology

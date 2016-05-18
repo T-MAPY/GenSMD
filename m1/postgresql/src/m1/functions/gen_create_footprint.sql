@@ -104,5 +104,5 @@ params: {                   //required
 },
 rotation: 45                //optional, float, default: 0 (for params with wkt geometry only)
 
-test: tests.test_create_footprint()
+test: m1_tests.test_create_footprint()
 ';

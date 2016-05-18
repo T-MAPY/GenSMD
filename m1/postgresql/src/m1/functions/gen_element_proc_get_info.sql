@@ -5,7 +5,7 @@ AS $function$
 BEGIN
   RETURN QUERY (
     WITH ep AS (
-      SELECT *, ST_Length(ep.geom) as len FROM data.elements_proc ep WHERE elm_proc_id = aelm_proc_id
+      SELECT *, ST_Length(ep.geom) as len FROM m1_data.elements_proc ep WHERE elm_proc_id = aelm_proc_id
     )
     , edge AS (
       SELECT 
@@ -16,10 +16,10 @@ BEGIN
         ed.abs_next_right_edge = ed.edge_id as is_start_single,
         ed.abs_next_left_edge = ed.edge_id as is_end_single
       FROM ep
-      INNER JOIN topo_data.edge_data ed ON ep.edge_id = ed.edge_id
-      INNER JOIN topo_data.relation r ON ep.edge_id = r.element_id
+      INNER JOIN m1_topo_data.edge_data ed ON ep.edge_id = ed.edge_id
+      INNER JOIN m1_topo_data.relation r ON ep.edge_id = r.element_id
       INNER JOIN topology.layer lr ON r.layer_id = lr.layer_id
-      INNER JOIN data.elements_in l ON ((l.topo_ln).id) = r.topogeo_id
+      INNER JOIN m1_data.elements_in l ON ((l.topo_ln).id) = r.topogeo_id
       WHERE 
         lr.feature_type = 2 AND lr.table_name = 'elements_in' AND lr.schema_name = 'data'
     )
@@ -32,7 +32,7 @@ BEGIN
         false,
         false
       FROM ep 
-      INNER JOIN data.elements_in l ON ep.elm_id = l.elm_id 
+      INNER JOIN m1_data.elements_in l ON ep.elm_id = l.elm_id 
     )
     SELECT * FROM edge
     UNION

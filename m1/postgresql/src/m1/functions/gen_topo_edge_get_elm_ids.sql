@@ -5,8 +5,8 @@ AS $function$
 BEGIN
   RETURN (
     SELECT array_agg(elm_id) 
-    FROM data.elements_in l 
-    INNER JOIN topo_data.relation r ON ((l.topo_ln).id) = r.topogeo_id 
+    FROM m1_data.elements_in l 
+    INNER JOIN m1_topo_data.relation r ON ((l.topo_ln).id) = r.topogeo_id 
     INNER JOIN topology.layer lr ON r.layer_id = lr.layer_id
     WHERE r.element_id = aedge_id AND lr.feature_type = 2 AND lr.table_name = 'elements_in' AND lr.schema_name = 'data'
   );

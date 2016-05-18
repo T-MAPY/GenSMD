@@ -5,7 +5,7 @@ AS $function$
 BEGIN
   RETURN QUERY
     WITH ep AS (
-      SELECT * FROM data.elements_proc ep WHERE ep.elm_proc_id = aelm_proc_id
+      SELECT * FROM m1_data.elements_proc ep WHERE ep.elm_proc_id = aelm_proc_id
     )
     , elements AS (
       SELECT 
@@ -13,9 +13,9 @@ BEGIN
         f.foo_id as conflicting_foo_id, f.elm_proc_id, f.foo_type, f.elt_id_from, f.elt_id_to,
         row_number() OVER (PARTITION BY f.elm_proc_id ORDER BY (epf.foo_type + f.foo_type) DESC) as rn
       FROM ep
-      INNER JOIN data.element_footprints epf ON epf.elm_proc_id = ep.elm_proc_id
-      INNER JOIN data.element_footprints f ON ST_DWithin(epf.geom, f.geom, max_clearance) 
-      INNER JOIN data.element_types_relations r ON r.elt_id_from = epf.elt_id_from AND r.elt_id_to = f.elt_id_from AND r.conflict
+      INNER JOIN m1_data.element_footprints epf ON epf.elm_proc_id = ep.elm_proc_id
+      INNER JOIN m1_data.element_footprints f ON ST_DWithin(epf.geom, f.geom, max_clearance) 
+      INNER JOIN m1_data.element_types_relations r ON r.elt_id_from = epf.elt_id_from AND r.elt_id_to = f.elt_id_from AND r.conflict
       WHERE ep.elm_proc_id <> f.elm_proc_id
         -- foo_type (topo, nontopo) should be the same
         AND MOD(epf.foo_type, 2) = MOD(f.foo_type, 2)

@@ -116,7 +116,7 @@ BEGIN
                ELSE rvect.mendid + CASE WHEN rvect.mendid > rvect.mstartid THEN -1 ELSE 1 END
                END;
           
-        RAISE NOTICE '%, %', rvect, rvect.longvectshift + (mshiftend - rvect.longvectshift) * abs(r.measure - rmeta.locref[locindex-1])/abs(rmeta.locref[locindex] - rmeta.locref[locindex-1]);
+        --RAISE NOTICE '%, %', rvect, rvect.longvectshift + (mshiftend - rvect.longvectshift) * abs(r.measure - rmeta.locref[locindex-1])/abs(rmeta.locref[locindex] - rmeta.locref[locindex-1]);
 
         -- create vector for vertex on refgeom, start point is calculated on proportional distance on shiftgeom between nearby vectors
         RETURN QUERY SELECT ST_SnapToGrid(t.vector, 0.00001) FROM (

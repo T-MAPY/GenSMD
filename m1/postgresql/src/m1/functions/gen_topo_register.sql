@@ -9,10 +9,10 @@ BEGIN
   END IF;
   
   RAISE NOTICE 'TOPO Create topology';
-  PERFORM topology.CreateTopology('topo_data');
-  PERFORM topology.AddTopoGeometryColumn ('topo_data', 'data', 'elements_in', 'topo_pt', 'POINT');
-  PERFORM topology.AddTopoGeometryColumn ('topo_data', 'data', 'elements_in', 'topo_ln', 'LINE');
-  PERFORM topology.AddTopoGeometryColumn ('topo_data', 'data', 'elements_in', 'topo_pl', 'POLYGON');
+  PERFORM topology.CreateTopology('m1_topo_data');
+  PERFORM topology.AddTopoGeometryColumn ('m1_topo_data', 'm1_data', 'elements_in', 'topo_pt', 'POINT');
+  PERFORM topology.AddTopoGeometryColumn ('m1_topo_data', 'm1_data', 'elements_in', 'topo_ln', 'LINE');
+  PERFORM topology.AddTopoGeometryColumn ('m1_topo_data', 'm1_data', 'elements_in', 'topo_pl', 'POLYGON');
   
   RETURN true;
 END;

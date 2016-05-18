@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION m1.gen_trigger_elements_proc()
  LANGUAGE plpgsql
 AS $function$
 BEGIN
-  INSERT INTO data.element_footprints (
+  INSERT INTO m1_data.element_footprints (
       elm_proc_id, foo_type, elt_id_from, elt_id_to, elm_proc_topology, geom
     )
     SELECT 
