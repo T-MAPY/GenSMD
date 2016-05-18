@@ -4,11 +4,11 @@
 PostgreSQL 9.5.2 x64
 PostGIS 2.2.1
 Python 3.3 x64 (on system PATH)
- * install pip 
-   1) download https://bootstrap.pypa.io/get-pip.py
-   2) python get-pip.py
- * install xmltodict
-   Run (in Python directory): Scripts/pip install xmltodict
+1. install pip 
+  1. download https://bootstrap.pypa.io/get-pip.py
+  2. 'python get-pip.py'
+2. install xmltodict
+  1. Run (in Python directory): 'Scripts/pip install xmltodict'
  
 ## Troubleshooting
 
