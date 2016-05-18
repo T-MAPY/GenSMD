@@ -4,11 +4,12 @@
 PostgreSQL 9.5.2 x64
 PostGIS 2.2.1
 Python 3.3 x64 (on system PATH)
+
 1. install pip 
-  1. download https://bootstrap.pypa.io/get-pip.py
-  2. 'python get-pip.py'
+  * download https://bootstrap.pypa.io/get-pip.py
+  * run 'python get-pip.py'
 2. install xmltodict
-  1. Run (in Python directory): 'Scripts/pip install xmltodict'
+  * run (in Python directory): 'Scripts/pip install xmltodict'
  
 ## Troubleshooting
 
@@ -21,7 +22,7 @@ install ERROR: could not load library "../9.5/lib/rtpostgis-2.2.dll" follow [364
     with _winreg.OpenKey(hkcr, subkeyname) as subkey:
   TypeError: OpenKey() argument 2 must be str without null characters or None, not str
 ```
-change catching exception on the line 265 from:
+change catching exception on the line 265 '<PYTHON_DIR>\lib\mimetypes.py' from:
 ```
                 except EnvironmentError:
 ```
