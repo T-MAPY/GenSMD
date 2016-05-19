@@ -2,11 +2,11 @@ SET search_path = data, public, pg_catalog;
 
 CREATE TABLE elements (
     elm_id integer NOT NULL,
-    source_id numeric(38,0),
-    source_elt_id character varying(100),
+    source_id character varying(100),
+    source_elt_id character varying(50),
     source_rotation numeric(7,4) DEFAULT 0 NOT NULL,
     source_geom public.geometry NOT NULL,
-    target_elt_id character varying(100) NOT NULL,
+    target_elt_id character varying(50) NOT NULL,
     target_rotation numeric(7,4) DEFAULT 0 NOT NULL,
     target_geom public.geometry NOT NULL,
     state integer DEFAULT 0 NOT NULL,
