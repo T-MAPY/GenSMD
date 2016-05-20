@@ -103,6 +103,17 @@ BEGIN
     ), false) AS result
   );
 
+  RETURN QUERY (
+    SELECT 'm1.gen_create_footprint - empty'::varchar AS name, 
+    COALESCE(ST_Equals(
+      m1.gen_create_footprint(
+        'LINESTRING(0 0,10 0)'::geometry, 
+        '{}'::jsonb
+      ),
+      'POLYGON EMPTY'::geometry
+    ), false) AS result
+  );  
+
 END;
 $function$
 ;

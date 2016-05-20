@@ -39,7 +39,14 @@ BEGIN
     
   INSERT INTO m1_data.elements_proc (edge_id, geom)
     SELECT e.edge_id, e.geom
-    FROM m1_topo_data.edge_data e; 
+    FROM m1_topo_data.edge_data e;
+
+  UPDATE m1_data.elements_proc ep 
+    SET weight = (
+      SELECT max(weight) 
+      FROM m1.gen_element_proc_get_info(ep.elm_proc_id) p 
+      INNER JOIN m1_data.element_types et ON (p.elt_id = et.elt_id)
+    );
 
   RETURN true;
 END;

@@ -9,8 +9,10 @@ BEGIN
       SELECT * FROM m1_data.elements_proc WHERE elm_proc_id = aelm_proc_id
     )
     , info AS (
-      SELECT DISTINCT elt_id, len, topology, is_start_single, is_end_single 
-      FROM m1.gen_element_proc_get_info((SELECT elm_proc_id FROM ep))
+      SELECT DISTINCT e.elt_id, e.len, e.topology, e.is_start_single, e.is_end_single 
+      FROM m1.gen_element_proc_get_info((SELECT elm_proc_id FROM ep)) e
+      INNER JOIN m1_data.element_types et ON (e.elt_id = et.elt_id)
+      WHERE et.geom_type = 2 -- for lines only
     )
     -- default footprint
     , footprint1 AS (

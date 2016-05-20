@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gen:GenModel xmlns:gen="http://gensmd.local/genmodel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gensmd.local/genmodel genmodel.xsd">
 <SelectorList>
-  <Selector cond="priority = 1">
-    <ElementType geomType="line" priority="3" />
+  <Selector cond="weight = 1">
+    <ElementType geomType="line" weight="3" />
     <RelationList>
       <RelationSelector cond="false" join="">
         <Relation clearance="1.2" />
@@ -17,7 +17,7 @@
     </RelationList>
   </Selector>
   <Selector cond="true">
-    <ElementType geomType="line" priority="3" />
+    <ElementType geomType="line" weight="3" />
     <RelationList>
       <RelationSelector cond="1=0" join="true">
         <Relation clearance="1.2" />
@@ -26,7 +26,7 @@
   </Selector>
 </SelectorList>
 <ElementTypeList>
-  <ElementType id="1720000" geomType="line" priority="1">
+  <ElementType id="1720000" geomType="line" weight="1">
     <TagDict>
       <Tag key="color" value="red" />
     </TagDict>
@@ -42,7 +42,7 @@
       <Buffer radius="0.2" cap="flat" offset="1.1" />
     </Footprint>
   </ElementType>
-  <ElementType id="545454545" geomType="line" priority="1">
+  <ElementType id="545454545" geomType="line" weight="1">
     <TagList>
       <Tag>topo</Tag>
       <Tag>silnice</Tag>

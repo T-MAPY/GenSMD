@@ -110,7 +110,7 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-    <xs:attribute name="priority" type="xs:int" use="optional" />
+    <xs:attribute name="weight" type="xs:int" use="optional" />
     <xs:attribute name="topology"  type="BoolDefinition" use="optional" />
 	</xs:complexType>
 	

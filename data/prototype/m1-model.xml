@@ -2,7 +2,7 @@
 <gen:GenModel xmlns:gen="http://gensmd.local/genmodel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gensmd.local/genmodel genmodel.xsd">
 <SelectorList>
   <Selector>
-    <ElementType geomType="line" />
+    <ElementType weight="0" geomType="line" />
     <RelationList>
       <RelationSelector>
         <Relation conflict="true" />
@@ -13,19 +13,19 @@
     </RelationList>  
   </Selector>
   <Selector cond="taglist ? 'komunikace'">
-    <ElementType priority="1" topology="true" />
+    <ElementType weight="100" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'hranice'">
-    <ElementType priority="4" topology="true" />
+    <ElementType weight="50" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'voda'">
-    <ElementType priority="2" topology="true" />
+    <ElementType weight="80" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'zelen'">
-    <ElementType priority="6" />
+    <ElementType weight="40" />
   </Selector>
   <Selector cond="taglist ? 'terenni stupen'">
-    <ElementType priority="5" />
+    <ElementType weight="30" />
   </Selector>
   <Selector cond="id = '4120000'">
     <RelationList>

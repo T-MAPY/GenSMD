@@ -11,11 +11,11 @@ BEGIN
   TRUNCATE m1_data.element_types_relations CASCADE;
   TRUNCATE m1_data.element_types CASCADE;
   
-  INSERT INTO m1_data.element_types (elt_id, geom_type, priority, footprint, topology)
+  INSERT INTO m1_data.element_types (elt_id, geom_type, weight, footprint, topology)
   SELECT 
     id, 
     json_extract_path_text(json_object('{"point", 1, "line", 2, "polygon", 3}'), geomtype)::smallint,
-    priority,
+    COALESCE(weight, 0),
     COALESCE(footprint, '{}'::jsonb),
     topology
   FROM m1_model.vw_element_types_load;

@@ -4,6 +4,7 @@ CREATE TABLE elements_proc (
     elm_proc_id integer NOT NULL,
     elm_id integer,
     edge_id integer,
+    weight integer,
     geom public.geometry NOT NULL
 );
 

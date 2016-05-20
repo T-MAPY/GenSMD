@@ -83,6 +83,8 @@ BEGIN
         m1.gen_get_buffer_style_parameters(params, '', 'buffer')
       ), 0.0001);
     END IF;
+  ELSE
+    footprint := ST_Buffer(footprint, 0);
   END IF;
   RETURN footprint;
 END;

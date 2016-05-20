@@ -13,22 +13,22 @@
     </RelationList>  
   </Selector>
   <Selector cond="taglist ? 'komunikace'">
-    <ElementType priority="1" topology="true" />
+    <ElementType weight="1" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'hranice'">
-    <ElementType priority="4" topology="true" />
+    <ElementType weight="4" topology="true" />
   </Selector>
   <Selector cond="taglist ? 'voda'">
-    <ElementType priority="2" />
+    <ElementType weight="2" />
   </Selector>
   <Selector cond="taglist ? 'voda' AND geomtype = 'line'">
     <ElementType topology="true" />
   </Selector>
   <Selector cond="taglist ? 'zelen'">
-    <ElementType priority="6" />
+    <ElementType weight="6" />
   </Selector>
   <Selector cond="taglist ? 'terenni stupen'">
-    <ElementType priority="5" />
+    <ElementType weight="5" />
   </Selector>
   <Selector cond="id = '4120000'">
     <RelationList>
